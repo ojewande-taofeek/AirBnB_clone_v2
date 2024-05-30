@@ -8,9 +8,24 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
-        """Returns a dictionary of models currently in storage"""
-        return FileStorage.__objects
+    def all(self, cls=None):
+        """
+            Returns a dictionary of models currently in storage
+            or the list of objects of one type of class
+        """
+        if cls:
+            class_dict = dict()
+            for key, value in FileStorage.__objects.items():
+                key_type = key[:key.find('.')]
+                try:
+                    cls_type = (str(cls)).split('.')[2].rstrip(">'")
+                except IndexError:
+                    pass
+                if key_type == cls_type:
+                    class_dict[key] = value
+            return class_dict
+        else:
+            return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -45,6 +60,19 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def delete(self, obj=None):
+        """Deletes obj from __objects if it’s inside"""
+        if obj:
+            obj_dict = {}
+            # make a dummy copy to avoid runtime error
+            all_objs = self.all().copy()
+            for key in self.all().keys():
+                if obj.__class__.__name__ == key[:key.find('.')] and \
+                        obj.id == key[key.find('.') + 1:]:
+                    del all_objs[key]
+            FileStorage.__objects = all_objs
+            return FileStorage.__objects
