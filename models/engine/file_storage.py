@@ -13,8 +13,6 @@ class FileStorage:
             Returns a dictionary of models currently in storage
             or the list of objects of one type of class
         """
-        obj_dict = dict()
-        # for key,value in FileStorage.__objects.items():
         if cls:
             class_dict = dict()
             for key, value in FileStorage.__objects.items():
@@ -31,8 +29,6 @@ class FileStorage:
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        if obj._sa_instance_state:
-            del obj._sa_instance_state
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):

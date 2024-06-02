@@ -226,12 +226,16 @@ class HBNBCommand(cmd.Cmd):
             else:
                 for k, v in storage._FileStorage__objects.items():
                     if k.split('.')[0] == args:
+                        if v.__dict__['_sa_instance_state']:
+                            del v.__dict__['_sa_instance_state']
                         print_list.append(str(v))
         else:
             if os.getenv("HBNB_TYPE_STORAGE") == "db":
                 print_list = storage.all()
             else:
                 for k, v in storage._FileStorage__objects.items():
+                    if v.__dict__['_sa_instance_state']:
+                        del v.__dict__['_sa_instance_state']
                     print_list.append(str(v))
         print("[", end="")
         for i, items in enumerate(print_list):
