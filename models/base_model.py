@@ -22,17 +22,38 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            del kwargs['__class__']
+            try:
+                kwargs["id"]
+            except KeyError:
+                kwargs['id'] = str(uuid.uuid4())
+            try:
+                kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
+                                                         '%Y-%m-%dT%H:%M:%S.%f'
+                                                         )
+            except KeyError:
+                kwargs['updated_at'] = datetime.now()
+            try:
+                kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
+                                                         '%Y-%m-%dT%H:%M:%S.%f'
+                                                         )
+            except KeyError:
+                kwargs['created_at'] = datetime.now()
+            try:
+                del kwargs['__class__']
+            except Exception:
+                pass
             self.__dict__.update(kwargs)
 
     def __str__(self):
         """Returns a string representation of the instance"""
         cls = (str(type(self)).split('.')[-1]).split('\'')[0]
-        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
+        str_dict = {}
+        for k, v in self.__dict__.items():
+            if k == "_sa_instance_state":
+                continue
+            str_dict[k] = v
+        # return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
+        return '[{}] ({}) {}'.format(cls, self.id, str_dict)
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
@@ -49,7 +70,7 @@ class BaseModel:
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
         dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
-        if dictionary['_sa_instance_state']:
+        if dictionary.get('_sa_instance_state'):
             del dictionary['_sa_instance_state']
         return dictionary
 
