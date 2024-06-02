@@ -138,8 +138,9 @@ class HBNBCommand(cmd.Cmd):
                     if isinstance(value, float):
                         value = float(value)
                     setattr(new_instance, key, value)
-        storage.new(new_instance)
-        storage.save()
+        # storage.new(new_instance)
+        # storage.save()
+        new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
@@ -240,7 +241,6 @@ class HBNBCommand(cmd.Cmd):
                 print(", ", end="")
             print(items, end="")
         print("]")
-        # print(print_list)
 
     def help_all(self):
         """ Help information for the all command """
