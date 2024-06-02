@@ -138,8 +138,6 @@ class HBNBCommand(cmd.Cmd):
                     if isinstance(value, float):
                         value = float(value)
                     setattr(new_instance, key, value)
-        # storage.new(new_instance)
-        # storage.save()
         new_instance.save()
         print(new_instance.id)
 
