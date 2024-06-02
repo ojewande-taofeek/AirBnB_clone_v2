@@ -16,12 +16,12 @@ class State(BaseModel, Base):
     else:
         @property
         def cities(self):
-            from models import storage
-            from models.city import City
             """
                Returns the list of City instances with
                state_id equals to the current State.id
             """
+            from models import storage
+            from models.city import City
             all_cities = storage.all(City).values()
             city_list = list()
             for city in all_cities:
