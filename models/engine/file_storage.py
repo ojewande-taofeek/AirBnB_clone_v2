@@ -76,3 +76,9 @@ class FileStorage:
                     del all_objs[key]
             FileStorage.__objects = all_objs
             return FileStorage.__objects
+
+    def close(self):
+        """
+            To close the FileStorage and deserialize the objects
+        """
+        self.reload()
