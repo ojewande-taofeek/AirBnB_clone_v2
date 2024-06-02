@@ -38,7 +38,6 @@ class DBStorage():
         from models.user import User
         all_classes = [City, Amenity, Place, Review, State, User]
 
-        # obj_dict = dict()
         obj_list = list()
         if cls:
             if cls in all_classes:
@@ -52,9 +51,6 @@ class DBStorage():
             if instance.__dict__['_sa_instance_state']:
                 del instance.__dict__['_sa_instance_state']
             obj_list.append((instance))
-            # key = (str(cls)).split('.')[2].rstrip(">'") + '.' + instance.id
-            # obj_dict[key] = instance
-        # return obj_dict
         return obj_list
 
     def new(self, obj):
