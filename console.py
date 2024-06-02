@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ Console Module """
+import os
 import cmd
 import sys
 from models.base_model import BaseModel
@@ -137,6 +138,7 @@ class HBNBCommand(cmd.Cmd):
                     if isinstance(value, float):
                         value = float(value)
                     setattr(new_instance, key, value)
+        storage.new(new_instance)
         storage.save()
         print(new_instance.id)
 
@@ -220,14 +222,25 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            if os.getenv("HBNB_TYPE_STORAGE") == "db":
+                print_list = storage.all(HBNBCommand.classes[args])
+            else:
+                for k, v in storage._FileStorage__objects.items():
+                    if k.split('.')[0] == args:
+                        print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
-
-        print(print_list)
+            if os.getenv("HBNB_TYPE_STORAGE") == "db":
+                print_list = storage.all()
+            else:
+                for k, v in storage._FileStorage__objects.items():
+                    print_list.append(str(v))
+        print("[", end="")
+        for i, items in enumerate(print_list):
+            if i > 0:
+                print(", ", end="")
+            print(items, end="")
+        print("]")
+        # print(print_list)
 
     def help_all(self):
         """ Help information for the all command """

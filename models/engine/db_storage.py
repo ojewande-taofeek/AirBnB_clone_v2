@@ -1,32 +1,28 @@
 #!/usr/bin/env python3
 """This module defines a class to manage database storage for hbnb clone"""
 from sqlalchemy import create_engine
-from models.base_model import BaseModel, Base
+from models.base_model import Base
 import os
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
-class DBStorage(Base):
+class DBStorage():
     """This class manages storage of hbnb models in MYSQL"""
     __engine = None
     __session = None
 
     def __init__(self):
         """The class constructor"""
-        if os.environ.get("HBNB_MYSQL_USER"):
-            user = os.environ.get("HBNB_MYSQL_USER")
-        if os.environ.get("HBNB_MYSQL_PWD"):
-            passwd = os.environ.get("HBNB_MYSQL_PWD")
-        if os.environ.get("HBNB_MYSQL_HOST"):
-            host = os.environ.get("HBNB_MYSQL_HOST")
-        if os.environ.get("HBNB_MYSQL_DB"):
-            db = os.environ.get("HBNB_MYSQL_DB")
+        user = os.getenv("HBNB_MYSQL_USER")
+        passwd = os.getenv("HBNB_MYSQL_PWD")
+        host = os.getenv("HBNB_MYSQL_HOST")
+        db = os.getenv("HBNB_MYSQL_DB")
 
-        self.__engine = create_engine("""mysql+mysqldb://{}:{}@{}:3306/
-                                      {}""".format(user, passwd, host, db),
+        self.__engine = create_engine("mysql+mysqldb://{}:{}@{}:3306/{}".format
+                                      (user, passwd, host, db),
                                       pool_pre_ping=True)
 
-        if os.environ.get("HBNB_ENV") == "test":
+        if os.getenv("HBNB_ENV") == "test":
             Base.meta.drop_all(self.__engine)
 
     def all(self, cls=None):
@@ -42,18 +38,24 @@ class DBStorage(Base):
         from models.user import User
         all_classes = [City, Amenity, Place, Review, State, User]
 
-        obj_dict = dict{}
+        # obj_dict = dict()
+        obj_list = list()
         if cls:
             if cls in all_classes:
                 class_objs = self.__session.query(cls).all()
             else:
                 return
         else:
-            class_objs = self.__session.query(State, City).all()
+            for cls in all_classes:
+                class_objs = self.__session.query(cls).all()
         for instance in class_objs:
-            key = (str(cls)).split('.')[2].rstrip(">'") + '.' + instance.id
-            obj_dict[key] = instance
-        return obj_dict
+            if instance.__dict__['_sa_instance_state']:
+                del instance.__dict__['_sa_instance_state']
+            obj_list.append((instance))
+            # key = (str(cls)).split('.')[2].rstrip(">'") + '.' + instance.id
+            # obj_dict[key] = instance
+        # return obj_dict
+        return obj_list
 
     def new(self, obj):
         """
