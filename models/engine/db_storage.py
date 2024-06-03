@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """This module defines a class to manage database storage for hbnb clone"""
 from sqlalchemy import create_engine
 from models.base_model import Base
