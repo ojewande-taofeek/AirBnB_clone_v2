@@ -48,6 +48,10 @@ class DBStorage():
             for cls in all_classes:
                 class_objs = self.__session.query(cls).all()
         for instance in class_objs:
+            """
+            if instance.__dict__['_sa_instance_state']:
+                del instance.__dict__['_sa_instance_state']
+            """
             obj_list.append((instance))
         return obj_list
 
@@ -92,5 +96,5 @@ class DBStorage():
         """
             Close the session()
         """
-        self.__session.remove()
+        self.__session.close()
         self.reload()
