@@ -25,7 +25,10 @@ def listState():
     """
         List states in the storage alphabetically
     """
-    all_states = storage.all(State)
+    all_states = list()
+    states = storage.all(State)
+    for state in states:
+        all_states.append(state)
     return render_template("7-states_list.html",
                            all_states=all_states)
 
