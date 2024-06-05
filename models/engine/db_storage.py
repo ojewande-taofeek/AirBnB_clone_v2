@@ -79,12 +79,12 @@ class DBStorage():
         """
             Create all tables in the database
         """
-        from models.city import City
-        from models.amenity import Amenity
-        from models.place import Place
-        from models.review import Review
         from models.state import State
+        from models.city import City
         from models.user import User
+        # from models.place import Place
+        # from models.review import Review
+        from models.amenity import Amenity
 
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine,
@@ -97,4 +97,3 @@ class DBStorage():
             Close the session()
         """
         self.__session.close()
-        self.reload()
